@@ -7,6 +7,8 @@ import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
 import 'package:public_rooster/util/spreadsheet_generator.dart';
 
+const version = 'lonu-trainingschemas V2';
+
 class ViewSchemaPage extends StatefulWidget {
   const ViewSchemaPage({super.key});
 
@@ -83,7 +85,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
           SizedBox(height: 10),
           Text('Klik op training veld, als tekst niet helemaal zichtbaar is!'),
           Text(
-            'lonu-trainingschemas V2',
+            version,
             style: TextStyle(fontSize: 10),
           ),
         ],
