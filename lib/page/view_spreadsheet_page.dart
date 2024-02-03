@@ -5,6 +5,7 @@ import 'package:public_rooster/event/app_events.dart';
 import 'package:public_rooster/model/app_models.dart';
 import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
+import 'package:public_rooster/util/spreadsheet_generator.dart';
 
 class ViewSchemaPage extends StatefulWidget {
   const ViewSchemaPage({super.key});
@@ -20,11 +21,12 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   String _barTitle = '???';
   bool _nextMonthEnabled = false;
   bool _prevMonthEnabled = false;
+  Widget _dataGrid = Container();
 
   @override
   void initState() {
     AppController.instance.setActiveDate(DateTime.now());
-    _getSpreadsheets();
+    _getAllSpreadData();
     AppEvents.onSpreadsheetReadyEvent(_onReady);
     super.initState();
   }
@@ -36,6 +38,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         _activeSpreadsheet =
             AppHelper.instance.findSpreadsheetByCurrentDate(_spreadSheets);
         _setStateActions(DateTime.now());
+        _dataGrid = _buildGrid();
       });
     }
   }
@@ -46,51 +49,66 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
 
     return Scaffold(
       appBar: _showTabBar() ? _appBar() : null,
-      body: Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildGrid(),
-            const SizedBox(height: 10),
-            const Text(
-                'Klik op training veld, als tekst niet helemaal zichtbaar is!'),
-            const Text(
-              'lonu-trainingschemas v1.1',
-              style: TextStyle(fontSize: 10),
-            ),
-          ],
-        ),
+      body: _buildBody(),
+    );
+  }
+
+  //---------------------------------
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: SafeArea(
+        child: _dataGrid,
       ),
     );
   }
 
+  //--------------------------------------------------------
   Widget _buildGrid() {
-    double colSpace = AppHelper.instance.isWindows() ? 15 : 6;
-    return SafeArea(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              horizontalMargin: 10,
-              headingRowColor:
-                  MaterialStateColor.resolveWith((states) => c.lightblue),
-              columnSpacing: colSpace,
-              dataRowMinHeight: 15,
-              dataRowMaxHeight: 35,
-              columns: _buildHeader(),
-              rows: _buildRows(),
-            ),
-          ),
-        ),
-      ),
+    return ListView.builder(
+      itemCount: AppData.instance.activeTrainingGroups.length + 1,
+      itemBuilder: (context, index) => _buildListViewItem(context, index),
     );
   }
 
-  List<DataColumn> _buildHeader() {
+  //--------------------------------
+  Widget _buildListViewItem(BuildContext context, int index) {
+    if (index < AppData.instance.activeTrainingGroups.length) {
+      return _buildDataTable(context, index);
+    } else {
+      return const Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 10),
+          Text('Klik op training veld, als tekst niet helemaal zichtbaar is!'),
+          Text(
+            'lonu-trainingschemas V2',
+            style: TextStyle(fontSize: 10),
+          ),
+        ],
+      );
+    }
+  }
+
+  //--------------------------------
+  Widget _buildDataTable(BuildContext context, int index) {
+    double colSpace = AppHelper.instance.isWindows() ? 25 : 10;
+    DateTime date = AppData.instance.activeTrainingGroups[index].startDate;
+    return DataTable(
+      headingRowHeight: 30,
+      horizontalMargin: 10,
+      headingRowColor: MaterialStateColor.resolveWith((states) => c.lightblue),
+      columnSpacing: colSpace,
+      dataRowMinHeight: 15,
+      dataRowMaxHeight: 30,
+      columns: _buildHeader(date),
+      rows: _buildRows(index),
+    );
+  }
+
+  //-------------------------
+  List<DataColumn> _buildHeader(DateTime date) {
     List<DataColumn> result = [];
 
     result.add(const DataColumn(
@@ -99,18 +117,19 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         label:
             Text('Training', style: TextStyle(fontStyle: FontStyle.italic))));
 
-    for (Groep groep in Groep.values) {
+    for (String groupName
+        in SpreadsheetGenerator.instance.getGroupNames(date)) {
       result.add(DataColumn(
-          label: Text(groep.name.toUpperCase(),
+          label: Text(groupName.toUpperCase(),
               style: const TextStyle(fontStyle: FontStyle.italic))));
     }
+
     return result;
   }
 
-  List<DataRow> _buildRows() {
+  //-------------------------
+  List<DataRow> _buildRows(int index) {
     List<DataRow> result = [];
-
-    _activeSpreadsheet.rows.sort((a, b) => a.date.compareTo(b.date));
 
     for (FsSpreadsheetRow fsRow in _activeSpreadsheet.rows) {
       MaterialStateColor col =
@@ -136,16 +155,18 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     List<DataCell> result = [];
 
     result.add(_buildCell(AppHelper.instance.dayAsString(fsRow.date)));
-
     result.add(_buildTrainingCell(fsRow.trainingText));
 
+    List<String> groupNames =
+        SpreadsheetGenerator.instance.getGroupNames(fsRow.date);
+
     if (!fsRow.isExtraRow) {
-      for (int i = 0; i < Groep.values.length; i++) {
+      for (int i = 0; i < groupNames.length; i++) {
         result.add(_buildCell(fsRow.rowCells[i]));
       }
     } else {
-      for (int i = 0; i < Groep.values.length; i++) {
-        result.add(_buildCell(''));
+      for (int i = 0; i < groupNames.length; i++) {
+        result.add(const DataCell(Text('')));
       }
     }
 
@@ -171,8 +192,8 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         )));
   }
 
-  void _getSpreadsheets() async {
-    await AppController.instance.retrieveSpreadsheet();
+  void _getAllSpreadData() async {
+    await AppController.instance.retrieveAllSpreadsheetData();
   }
 
   String _buildBarTitle() {
@@ -240,6 +261,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     _activeSpreadsheet =
         AppHelper.instance.findSpreadsheetByDate(_spreadSheets, dateTime);
     _barTitle = _buildBarTitle();
+    _dataGrid = _buildGrid();
 
     DateTime nextMonth = AppHelper.instance.getNextMonth(dateTime);
     FsSpreadsheet nextSpreadsheet =

@@ -205,14 +205,6 @@ class ActiveTrainingGroup {
   });
 }
 
-enum Groep {
-  pr,
-  r1,
-  r2,
-  r3,
-  zamo;
-}
-
 enum DeviceType {
   mobile,
   table,

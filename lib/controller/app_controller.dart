@@ -15,18 +15,21 @@ class AppController {
   }
 
   ///-------------------------
-  Future<void> retrieveSpreadsheet() async {
+  Future<void> retrieveAllSpreadsheetData() async {
     List<FsSpreadsheet> result = await Dbs.instance.retrieveAllSpreadsheets();
 
     AppData.instance.activeTrainingGroups =
         SpreadsheetGenerator.instance.generateActiveTrainingGroups();
 
     AppData.instance.activeSpreadsheets = result;
+
+    await _getTrainerGroups();
+
     AppEvents.fireSpreadsheetReady();
   }
 
   //------------ get TrainingGroups -----------------------
-  Future<void> getTrainerGroups() async {
+  Future<void> _getTrainerGroups() async {
     AppData.instance.trainingGroups = await Dbs.instance.getTrainingGroups();
     AppData.instance.activeTrainingGroups =
         SpreadsheetGenerator.instance.generateActiveTrainingGroups();
