@@ -10,6 +10,8 @@ class AppData {
 
   void _initialize() {}
 
+  RunMode runMode = RunMode.acc;
+
   List<TrainingGroup> trainingGroups = [];
   List<ActiveTrainingGroup> activeTrainingGroups = [];
   DateTime _activeDate = DateTime(2024, 1, 1);

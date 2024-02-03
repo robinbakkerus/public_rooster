@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:public_rooster/util/app_helper.dart';
 
 class FsSpreadsheet {
   int year = 2024;
@@ -106,39 +107,41 @@ class FsSpreadsheetRow {
 }
 
 ///----------------------------------
-///-------------------------------
-
 class TrainingGroup {
   final String name;
   final String description;
   final DateTime startDate;
   final DateTime endDate;
-  List<DateTime> excludeDays = [];
+  List<ExcludePeriod> excludePeriods = [];
   List<int> tiaDays = []; // take into account weekdays
+  List<String> trainerPks = [];
 
   TrainingGroup({
     required this.name,
     required this.description,
     required this.startDate,
     required this.endDate,
-    required this.excludeDays,
+    required this.excludePeriods,
     required this.tiaDays,
+    required this.trainerPks,
   });
   TrainingGroup copyWith({
     String? name,
     String? description,
     DateTime? startDate,
     DateTime? endDate,
-    List<DateTime>? excludeDays,
+    List<ExcludePeriod>? excludePeriods,
     List<int>? tiaDays,
+    List<String>? trainerPks,
   }) {
     return TrainingGroup(
       name: name ?? this.name,
       description: description ?? this.description,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
-      excludeDays: excludeDays ?? this.excludeDays,
+      excludePeriods: excludePeriods ?? this.excludePeriods,
       tiaDays: tiaDays ?? this.tiaDays,
+      trainerPks: trainerPks ?? this.trainerPks,
     );
   }
 
@@ -148,8 +151,9 @@ class TrainingGroup {
       'description': description,
       'startDate': startDate.millisecondsSinceEpoch,
       'endDate': endDate.millisecondsSinceEpoch,
-      'excludeDays': excludeDays.map((x) => x.millisecondsSinceEpoch).toList(),
+      'excludePeriods': excludePeriods.map((x) => x.toMap()).toList(),
       'tiaDays': tiaDays,
+      'trainerPks': trainerPks,
     };
   }
 
@@ -157,17 +161,17 @@ class TrainingGroup {
     return TrainingGroup(
       name: map['name'],
       description: map['description'],
-      startDate: DateTime.fromMillisecondsSinceEpoch(map['startDate']),
-      endDate: DateTime.fromMillisecondsSinceEpoch(map['endDate']),
-      excludeDays: List<DateTime>.from(map['excludeDays']
-          .map((x) => DateTime.fromMillisecondsSinceEpoch(x))),
+      startDate: AppHelper.instance.parseDateTime(map['startDate'])!,
+      endDate: AppHelper.instance.parseDateTime(map['endDate'])!,
+      excludePeriods: List<ExcludePeriod>.from(
+          map['excludePeriods']?.map((x) => ExcludePeriod.fromMap(x))),
       tiaDays: List<int>.from(map['tiaDays']),
+      trainerPks: List<String>.from(map['trainerPks']),
     );
   }
-
   @override
   String toString() {
-    return 'TrainingGroup(name: $name, description: $description, startDate: $startDate, endDate: $endDate, excludeDays: $excludeDays, tiaDays: $tiaDays)';
+    return 'TrainingGroup(name: $name, description: $description, startDate: $startDate, endDate: $endDate, excludePeriods: $excludePeriods, tiaDays: $tiaDays, trainerPks: $trainerPks)';
   }
 
   @override
@@ -179,8 +183,9 @@ class TrainingGroup {
         other.description == description &&
         other.startDate == startDate &&
         other.endDate == endDate &&
-        listEquals(other.excludeDays, excludeDays) &&
-        listEquals(other.tiaDays, tiaDays);
+        listEquals(other.excludePeriods, excludePeriods) &&
+        listEquals(other.tiaDays, tiaDays) &&
+        listEquals(other.trainerPks, trainerPks);
   }
 
   @override
@@ -189,9 +194,57 @@ class TrainingGroup {
         description.hashCode ^
         startDate.hashCode ^
         endDate.hashCode ^
-        excludeDays.hashCode ^
-        tiaDays.hashCode;
+        excludePeriods.hashCode ^
+        tiaDays.hashCode ^
+        trainerPks.hashCode;
   }
+}
+
+///-----------------------------
+class ExcludePeriod {
+  final DateTime fromDate;
+  final DateTime toDate;
+  ExcludePeriod({
+    required this.fromDate,
+    required this.toDate,
+  });
+  ExcludePeriod copyWith({
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    return ExcludePeriod(
+      fromDate: fromDate ?? this.fromDate,
+      toDate: toDate ?? this.toDate,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'fromDate': fromDate.millisecondsSinceEpoch,
+      'toDate': toDate.millisecondsSinceEpoch,
+    };
+  }
+
+  factory ExcludePeriod.fromMap(Map<String, dynamic> map) {
+    return ExcludePeriod(
+      fromDate: DateTime.fromMillisecondsSinceEpoch(map['fromDate']),
+      toDate: DateTime.fromMillisecondsSinceEpoch(map['toDate']),
+    );
+  }
+
+  @override
+  String toString() => 'ExcludePeriod(fromDate: $fromDate, toDate: $toDate)';
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ExcludePeriod &&
+        other.fromDate == fromDate &&
+        other.toDate == toDate;
+  }
+
+  @override
+  int get hashCode => fromDate.hashCode ^ toDate.hashCode;
 }
 
 ///--------------------------------
@@ -209,4 +262,10 @@ enum DeviceType {
   mobile,
   table,
   pc;
+}
+
+enum RunMode {
+  prod,
+  acc,
+  dev;
 }

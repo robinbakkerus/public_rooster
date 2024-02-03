@@ -7,7 +7,7 @@ import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
 import 'package:public_rooster/util/spreadsheet_generator.dart';
 
-const version = 'lonu-trainingschemas V2';
+const version = 'lonu-trainingschemas V3 (3-feb-2024)';
 
 class ViewSchemaPage extends StatefulWidget {
   const ViewSchemaPage({super.key});
@@ -28,7 +28,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   @override
   void initState() {
     AppController.instance.setActiveDate(DateTime.now());
-    _getAllSpreadData();
+    _getAllSpreadsheetData();
     AppEvents.onSpreadsheetReadyEvent(_onReady);
     super.initState();
   }
@@ -78,16 +78,20 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     if (index < AppData.instance.activeTrainingGroups.length) {
       return _buildDataTable(context, index);
     } else {
-      return const Column(
+      return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
-          Text('Klik op training veld, als tekst niet helemaal zichtbaar is!'),
-          Text(
+          const SizedBox(height: 10),
+          const Text(
+              'Klik op training veld, als tekst niet helemaal zichtbaar is!'),
+          const Text(
             version,
             style: TextStyle(fontSize: 10),
           ),
+          AppData.instance.runMode == RunMode.acc
+              ? const Text('Acc')
+              : const Text(''),
         ],
       );
     }
@@ -194,7 +198,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         )));
   }
 
-  void _getAllSpreadData() async {
+  void _getAllSpreadsheetData() async {
     await AppController.instance.retrieveAllSpreadsheetData();
   }
 
@@ -250,10 +254,12 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   }
 
   void _gotoMonth(DateTime dateTime) {
+    AppController.instance.setActiveDate(dateTime);
     FsSpreadsheet fsSpreadsheet =
         (AppHelper.instance.findSpreadsheetByDate(_spreadSheets, dateTime));
     if (!fsSpreadsheet.isEmpty()) {
       setState(() {
+        AppController.instance.generateTrainerGroups();
         _setStateActions(dateTime);
       });
     }
@@ -262,6 +268,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   void _setStateActions(DateTime dateTime) {
     _activeSpreadsheet =
         AppHelper.instance.findSpreadsheetByDate(_spreadSheets, dateTime);
+    AppController.instance.generateTrainerGroups();
     _barTitle = _buildBarTitle();
     _dataGrid = _buildGrid();
 

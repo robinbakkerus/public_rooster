@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/model/app_models.dart';
 import 'package:public_rooster/service/dbs.dart';
 import 'package:stack_trace/stack_trace.dart';
@@ -63,7 +64,14 @@ class FirestoreHelper implements Dbs {
 
   ///--------------------------------------------
   CollectionReference collectionRef(FsCol fsCol) {
-    String collectionName = fsCol.name;
+    String collectionName = AppData.instance.runMode == RunMode.prod
+        ? fsCol.name
+        : '${fsCol.name}_acc';
+
+    if (collectionName.startsWith('mail')) {
+      collectionName = 'mail';
+    }
+
     return firestore.collection(collectionName);
   }
 

@@ -28,6 +28,12 @@ class AppController {
     AppEvents.fireSpreadsheetReady();
   }
 
+  // get TrainingGroups
+  void generateTrainerGroups() {
+    AppData.instance.activeTrainingGroups =
+        SpreadsheetGenerator.instance.generateActiveTrainingGroups();
+  }
+
   //------------ get TrainingGroups -----------------------
   Future<void> _getTrainerGroups() async {
     AppData.instance.trainingGroups = await Dbs.instance.getTrainingGroups();

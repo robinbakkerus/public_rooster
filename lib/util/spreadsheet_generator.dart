@@ -46,6 +46,16 @@ class SpreadsheetGenerator with AppMixin {
   //---- private --
 
   bool _isExcluded(TrainingGroup trainingGroup, DateTime date) {
-    return trainingGroup.excludeDays.contains(date);
+    if (trainingGroup.excludePeriods.isEmpty) {
+      return false;
+    }
+    for (ExcludePeriod excludePeriod in trainingGroup.excludePeriods) {
+      if (date.isAfter(excludePeriod.fromDate) &&
+          date.isBefore(excludePeriod.toDate)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -77,6 +78,21 @@ class AppHelper {
       days.add(startDate.add(Duration(days: i)));
     }
     return days;
+  }
+
+  ///----------------------------------------
+  DateTime? parseDateTime(Object? value) {
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    } else if (value is DateTime) {
+      return value;
+    } else if (value is Timestamp) {
+      return (value).toDate();
+    } else if (value == null) {
+      return null;
+    } else {
+      return DateTime.now();
+    }
   }
 
   ///-----------------
