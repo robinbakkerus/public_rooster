@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:public_rooster/controller/app_controller.dart';
+import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/event/app_events.dart';
 import 'package:public_rooster/model/app_models.dart';
-import 'package:public_rooster/repo/firestore_helper.dart';
 import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
 
@@ -22,6 +23,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
 
   @override
   void initState() {
+    AppController.instance.setActiveDate(DateTime.now());
     _getSpreadsheets();
     AppEvents.onSpreadsheetReadyEvent(_onReady);
     super.initState();
@@ -30,6 +32,9 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   void _onReady(SpreadsheetReadyEvent event) {
     if (mounted) {
       setState(() {
+        _spreadSheets = AppData.instance.activeSpreadsheets;
+        _activeSpreadsheet =
+            AppHelper.instance.findSpreadsheetByCurrentDate(_spreadSheets);
         _setStateActions(DateTime.now());
       });
     }
@@ -167,8 +172,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   }
 
   void _getSpreadsheets() async {
-    _spreadSheets = await FirestoreHelper.instance.retrieveSpreadsheets();
-    AppEvents.fireSpreadsheetReady();
+    await AppController.instance.retrieveSpreadsheet();
   }
 
   String _buildBarTitle() {

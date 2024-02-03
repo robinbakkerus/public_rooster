@@ -69,6 +69,16 @@ class AppHelper {
     }
   }
 
+  ///----------------------------------------//------------------
+  List<DateTime> getDaysInBetween(DateTime startDate) {
+    DateTime endDate = DateTime(startDate.year, startDate.month + 1, 0);
+    List<DateTime> days = [];
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      days.add(startDate.add(Duration(days: i)));
+    }
+    return days;
+  }
+
   ///-----------------
   void getDeviceType(BuildContext context) async {
     final deviceInfoPlugin = DeviceInfoPlugin();

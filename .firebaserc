@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "lonutrainingschema"
-  }
+  },
+  "targets": {
+    "lonutrainingschema": {
+      "hosting": {
+        "publiek": [
+          "public-lonutrainingschemas"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
