@@ -5,8 +5,11 @@
   "targets": {
     "lonutrainingschema": {
       "hosting": {
-        "publiek": [
+        "prod": [
           "public-lonutrainingschemas"
+        ],
+        "acc": [
+          "publicacc-lonutrainingschema"
         ]
       }
     }

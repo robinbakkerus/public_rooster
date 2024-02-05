@@ -1,3 +1,4 @@
+import 'package:public_rooster/data/app_version.dart' as version;
 import 'package:public_rooster/model/app_models.dart';
 import 'package:public_rooster/util/app_helper.dart';
 
@@ -10,7 +11,7 @@ class AppData {
 
   void _initialize() {}
 
-  RunMode runMode = RunMode.acc;
+  RunMode runMode = version.appRunModus;
 
   List<TrainingGroup> trainingGroups = [];
   List<ActiveTrainingGroup> activeTrainingGroups = [];

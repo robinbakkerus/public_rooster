@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:public_rooster/controller/app_controller.dart';
 import 'package:public_rooster/data/app_data.dart';
+import 'package:public_rooster/data/app_version.dart' as version;
 import 'package:public_rooster/event/app_events.dart';
 import 'package:public_rooster/model/app_models.dart';
 import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
 import 'package:public_rooster/util/spreadsheet_generator.dart';
-
-const version = 'lonu-trainingschemas V3 (3-feb-2024)';
 
 class ViewSchemaPage extends StatefulWidget {
   const ViewSchemaPage({super.key});
@@ -78,23 +77,29 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     if (index < AppData.instance.activeTrainingGroups.length) {
       return _buildDataTable(context, index);
     } else {
-      return Column(
+      return _buildBottomColumn();
+    }
+  }
+
+  Container _buildBottomColumn() {
+    Color color =
+        AppData.instance.runMode == RunMode.acc ? Colors.yellow : Colors.white;
+    return Container(
+      color: color,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
           const Text(
               'Klik op training veld, als tekst niet helemaal zichtbaar is!'),
-          const Text(
-            version,
-            style: TextStyle(fontSize: 10),
+          Text(
+            'public-lonutrainingschemas ${version.appVersion}',
+            style: const TextStyle(fontSize: 10),
           ),
-          AppData.instance.runMode == RunMode.acc
-              ? const Text('Acc')
-              : const Text(''),
         ],
-      );
-    }
+      ),
+    );
   }
 
   //--------------------------------
