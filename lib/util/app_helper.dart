@@ -1,14 +1,13 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
-import 'package:intl/date_symbol_data_local.dart';
-// import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:public_rooster/model/app_models.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:public_rooster/data/app_data.dart';
+import 'package:public_rooster/model/app_models.dart';
 
 class AppHelper {
   AppHelper._();
@@ -95,13 +94,20 @@ class AppHelper {
     }
   }
 
-  ///-----------------
-  void getDeviceType(BuildContext context) async {
-    final deviceInfoPlugin = DeviceInfoPlugin();
-    final deviceInfo = await deviceInfoPlugin.deviceInfo;
-    final allInfo = deviceInfo.data;
-    log(allInfo.toString());
+  ///-----------------------------------
+  bool isDateExcluded(DateTime date) {
+    ExcludeDay? excludeDay = AppData.instance.excludeDays
+        .firstWhereOrNull((e) => e.dateTime == date);
+    return excludeDay != null ? true : false;
   }
+
+  ///-----------------
+  // void getDeviceType(BuildContext context) async {
+  // final deviceInfoPlugin = DeviceInfoPlugin();
+  // final deviceInfo = await deviceInfoPlugin.deviceInfo;
+  // final allInfo = deviceInfo.data;
+  // log(allInfo.toString());
+  // }
 
   ///--------------------
   TargetPlatform getPlatform() {

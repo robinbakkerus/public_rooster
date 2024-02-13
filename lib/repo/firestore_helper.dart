@@ -75,6 +75,26 @@ class FirestoreHelper implements Dbs {
     return firestore.collection(collectionName);
   }
 
+  @override
+  Future<List<ExcludeDay>> getExcludeDays() async {
+    List<ExcludeDay> result = [];
+    CollectionReference colRef = collectionRef(FsCol.metadata);
+
+    late DocumentSnapshot snapshot;
+    try {
+      snapshot = await colRef.doc('exclude_days').get();
+      if (snapshot.exists) {
+        Map<String, dynamic> map = snapshot.data() as Map<String, dynamic>;
+        List<dynamic> data = List<dynamic>.from(map['days'] as List);
+        result = data.map((e) => ExcludeDay.fromMap(e)).toList();
+      }
+    } catch (ex, stackTrace) {
+      _handleError(ex, stackTrace);
+    }
+
+    return result;
+  }
+
   ///-------- sendEmail
   ///@override
   @override

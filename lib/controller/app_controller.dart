@@ -19,13 +19,12 @@ class AppController {
   ///-------------------------
   Future<void> retrieveAllSpreadsheetData() async {
     List<FsSpreadsheet> result = await Dbs.instance.retrieveAllSpreadsheets();
+    await _getTrainerGroups();
 
     AppData.instance.activeTrainingGroups =
         SpreadsheetGenerator.instance.generateActiveTrainingGroups();
 
     AppData.instance.activeSpreadsheets = result;
-
-    await _getTrainerGroups();
 
     AppEvents.fireSpreadsheetReady();
   }
@@ -42,5 +41,11 @@ class AppController {
     log(AppData.instance.trainingGroups.toString());
     AppData.instance.activeTrainingGroups =
         SpreadsheetGenerator.instance.generateActiveTrainingGroups();
+  }
+
+  //------------ get ExcludeDays -----------------------
+  Future<void> getExcludeDays() async {
+    List<ExcludeDay> excludeDays = await Dbs.instance.getExcludeDays();
+    AppData.instance.excludeDays = excludeDays;
   }
 }

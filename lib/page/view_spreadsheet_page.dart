@@ -27,9 +27,15 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   @override
   void initState() {
     AppController.instance.setActiveDate(DateTime.now());
-    _getAllSpreadsheetData();
+    _getMetaData();
+
     AppEvents.onSpreadsheetReadyEvent(_onReady);
     super.initState();
+  }
+
+  void _getMetaData() async {
+    await AppController.instance.getExcludeDays();
+    await AppController.instance.retrieveAllSpreadsheetData();
   }
 
   void _onReady(SpreadsheetReadyEvent event) {
@@ -39,14 +45,14 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         _activeSpreadsheet =
             AppHelper.instance.findSpreadsheetByCurrentDate(_spreadSheets);
         _setStateActions(DateTime.now());
-        _dataGrid = _buildGrid();
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    AppHelper.instance.getDeviceType(context);
+    _dataGrid = _buildGrid(context);
+    // AppHelper.instance.getDeviceType(context);
 
     return Scaffold(
       appBar: _showTabBar() ? _appBar() : null,
@@ -56,30 +62,36 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
 
   //---------------------------------
   Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: SafeArea(
-        child: _dataGrid,
-      ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal, child: _dataGrid),
     );
   }
 
   //--------------------------------------------------------
-  Widget _buildGrid() {
-    return ListView.builder(
-      itemCount: AppData.instance.activeTrainingGroups.length + 1,
-      itemBuilder: (context, index) => _buildListViewItem(context, index),
+  // Widget _buildGrid() {
+  //   return ListView.builder(
+  //     itemCount: AppData.instance.activeTrainingGroups.length + 1,
+  //     itemBuilder: (context, index) => _buildListViewItem(context, index),
+  //   );
+  // }
+
+  Widget _buildGrid(BuildContext context) {
+    List<Widget> rows = [];
+
+    for (int i = 0; i < AppData.instance.activeTrainingGroups.length; i++) {
+      rows.add(_buildDataTable(context, i));
+    }
+    rows.add(_buildBottomColumn());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: rows,
     );
   }
-
   //--------------------------------
-  Widget _buildListViewItem(BuildContext context, int index) {
-    if (index < AppData.instance.activeTrainingGroups.length) {
-      return _buildDataTable(context, index);
-    } else {
-      return _buildBottomColumn();
-    }
-  }
 
   Container _buildBottomColumn() {
     Color color =
@@ -143,23 +155,29 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     List<DataRow> result = [];
 
     for (FsSpreadsheetRow fsRow in _activeSpreadsheet.rows) {
-      MaterialStateColor col =
-          MaterialStateColor.resolveWith((states) => Colors.white);
-      if (fsRow.isExtraRow) {
-        col = MaterialStateColor.resolveWith((states) => Colors.white);
-      } else if (fsRow.date.weekday == DateTime.tuesday) {
-        col = MaterialStateColor.resolveWith((states) => c.lightGeen);
-      } else if (fsRow.date.weekday == DateTime.thursday) {
-        col = MaterialStateColor.resolveWith((states) => c.lightOrange);
-      } else if (fsRow.date.weekday == DateTime.saturday) {
-        col = MaterialStateColor.resolveWith((states) => c.lightBrown);
-      }
-
+      MaterialStateColor col = _getRowColor(fsRow);
       DataRow dataRow = DataRow(cells: _buildDataCells(fsRow), color: col);
       result.add(dataRow);
     }
 
     return result;
+  }
+
+  MaterialStateColor _getRowColor(FsSpreadsheetRow fsRow) {
+    MaterialStateColor col =
+        MaterialStateColor.resolveWith((states) => Colors.white);
+    if (fsRow.isExtraRow) {
+      col = MaterialStateColor.resolveWith((states) => c.lonuExtraDag);
+    } else if (fsRow.date.weekday == DateTime.saturday) {
+      col = MaterialStateColor.resolveWith((states) => c.lonuZaterDag);
+    } else if (AppHelper.instance.isDateExcluded(fsRow.date)) {
+      col = MaterialStateColor.resolveWith((states) => c.lonuExtraDag);
+    } else if (fsRow.date.weekday == DateTime.tuesday) {
+      col = MaterialStateColor.resolveWith((states) => c.lonuDinsDag);
+    } else if (fsRow.date.weekday == DateTime.thursday) {
+      col = MaterialStateColor.resolveWith((states) => c.lonuDonderDag);
+    }
+    return col;
   }
 
   List<DataCell> _buildDataCells(FsSpreadsheetRow fsRow) {
@@ -201,10 +219,6 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
             overflow: TextOverflow.ellipsis,
           ),
         )));
-  }
-
-  void _getAllSpreadsheetData() async {
-    await AppController.instance.retrieveAllSpreadsheetData();
   }
 
   String _buildBarTitle() {
@@ -275,7 +289,6 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
         AppHelper.instance.findSpreadsheetByDate(_spreadSheets, dateTime);
     AppController.instance.generateTrainerGroups();
     _barTitle = _buildBarTitle();
-    _dataGrid = _buildGrid();
 
     DateTime nextMonth = AppHelper.instance.getNextMonth(dateTime);
     FsSpreadsheet nextSpreadsheet =
