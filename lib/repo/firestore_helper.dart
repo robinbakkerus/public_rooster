@@ -111,7 +111,8 @@ class FirestoreHelper implements Dbs {
     String traceMsg = _buildTraceMsg(stackTrace);
     _saveError(ex.toString(), traceMsg);
 
-    String html = '<div>Error detected: $ex <br> $traceMsg</div>';
+    String html =
+        '<div>Error detected in public_rooster: $ex <br> $traceMsg</div>';
     sendEmail(to: "robin.bakkerus@gmail.com", subject: 'Error', html: html);
 
     // AppEvents.fireErrorEvent(ex.toString());

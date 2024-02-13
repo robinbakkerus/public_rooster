@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/event/app_events.dart';
 import 'package:public_rooster/model/app_models.dart';
@@ -37,6 +39,7 @@ class AppController {
   //------------ get TrainingGroups -----------------------
   Future<void> _getTrainerGroups() async {
     AppData.instance.trainingGroups = await Dbs.instance.getTrainingGroups();
+    log(AppData.instance.trainingGroups.toString());
     AppData.instance.activeTrainingGroups =
         SpreadsheetGenerator.instance.generateActiveTrainingGroups();
   }
