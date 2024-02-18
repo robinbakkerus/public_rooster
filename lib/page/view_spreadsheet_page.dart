@@ -121,7 +121,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     return DataTable(
       headingRowHeight: 30,
       horizontalMargin: 10,
-      headingRowColor: MaterialStateColor.resolveWith((states) => c.lightblue),
+      headingRowColor: MaterialStateColor.resolveWith((states) => c.lonuBlauw),
       columnSpacing: colSpace,
       dataRowMinHeight: 15,
       dataRowMaxHeight: 30,
@@ -143,11 +143,22 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     for (String groupName
         in SpreadsheetGenerator.instance.getGroupNames(date)) {
       result.add(DataColumn(
-          label: Text(groupName.toUpperCase(),
+          label: Text(_formatHeader(groupName),
               style: const TextStyle(fontStyle: FontStyle.italic))));
     }
 
     return result;
+  }
+
+  //------------------------------
+  String _formatHeader(String header) {
+    if (header.length < 3) {
+      return header.toUpperCase();
+    } else if (header.toLowerCase() == 'zamo') {
+      return 'ZaMo';
+    } else {
+      return header;
+    }
   }
 
   //-------------------------
@@ -224,8 +235,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   String _buildBarTitle() {
     DateTime date =
         AppHelper.instance.getDateFromSpreadsheet(_activeSpreadsheet);
-    String prefix =
-        AppHelper.instance.isWindows() ? 'Trainingschema: ' : 'Schema: ';
+    String prefix = 'Schema ';
     return '$prefix${AppHelper.instance.monthAsString(date)}  ${date.year}';
   }
 
