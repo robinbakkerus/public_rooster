@@ -69,14 +69,6 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     );
   }
 
-  //--------------------------------------------------------
-  // Widget _buildGrid() {
-  //   return ListView.builder(
-  //     itemCount: AppData.instance.activeTrainingGroups.length + 1,
-  //     itemBuilder: (context, index) => _buildListViewItem(context, index),
-  //   );
-  // }
-
   Widget _buildGrid(BuildContext context) {
     List<Widget> rows = [];
 
@@ -85,10 +77,13 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     }
     rows.add(_buildBottomColumn());
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: rows,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 2, 2, 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: rows,
+      ),
     );
   }
   //--------------------------------
@@ -218,7 +213,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   }
 
   DataCell _buildTrainingCell(String text) {
-    double w = AppHelper.instance.isWindows() ? 200 : 100;
+    double w = AppHelper.instance.isWindows() ? 400 : 150;
     return DataCell(Container(
         decoration:
             BoxDecoration(border: Border.all(width: 0.1, color: Colors.grey)),

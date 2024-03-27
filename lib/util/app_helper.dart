@@ -37,7 +37,7 @@ class AppHelper {
 
   ///-----------------
   String dayAsString(DateTime date) {
-    String dag = DateFormat.EEEE('nl_NL').format(date).substring(0, 3);
+    String dag = DateFormat.EEEE('nl_NL').format(date).substring(0, 2);
     dag += ' ${date.day}';
     return dag;
   }
