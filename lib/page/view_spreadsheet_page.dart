@@ -23,6 +23,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   bool _nextMonthEnabled = false;
   bool _prevMonthEnabled = false;
   Widget _dataGrid = Container();
+  int _activeHeaderLength = 0;
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   }
 
   void _getMetaData() async {
-    await AppController.instance.getExcludeDays();
+    await AppController.instance.getSpecialDays();
     await AppController.instance.retrieveAllSpreadsheetData();
   }
 
@@ -121,7 +122,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
       dataRowMinHeight: 15,
       dataRowMaxHeight: 30,
       columns: _buildHeader(date),
-      rows: _buildRows(index),
+      rows: _buildDataRows(index),
     );
   }
 
@@ -129,11 +130,14 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   List<DataColumn> _buildHeader(DateTime date) {
     List<DataColumn> result = [];
 
+    List<String> groupNames = SpreadsheetGenerator.instance.getGroupNames(date);
+    String trainingText = groupNames.length > 2 ? 'Training' : 'Zomer training';
+
     result.add(const DataColumn(
         label: Text('Dag', style: TextStyle(fontStyle: FontStyle.italic))));
-    result.add(const DataColumn(
-        label:
-            Text('Training', style: TextStyle(fontStyle: FontStyle.italic))));
+    result.add(DataColumn(
+        label: Text(trainingText,
+            style: const TextStyle(fontStyle: FontStyle.italic))));
 
     for (String groupName
         in SpreadsheetGenerator.instance.getGroupNames(date)) {
@@ -142,6 +146,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
               style: const TextStyle(fontStyle: FontStyle.italic))));
     }
 
+    _activeHeaderLength = result.length;
     return result;
   }
 
@@ -151,16 +156,25 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
       return header.toUpperCase();
     } else if (header.toLowerCase() == 'zamo') {
       return 'ZaMo';
+    } else if (header.toLowerCase() == 'zomer') {
+      return 'Gecombineerd';
     } else {
       return header;
     }
   }
 
   //-------------------------
-  List<DataRow> _buildRows(int index) {
+  List<DataRow> _buildDataRows(int index) {
     List<DataRow> result = [];
 
+    DateTime startDate = AppData.instance.activeTrainingGroups[index].startDate;
+    DateTime endDate = AppData.instance.activeTrainingGroups[index].endDate!;
+
     for (FsSpreadsheetRow fsRow in _activeSpreadsheet.rows) {
+      if (fsRow.date.isAfter(endDate) || fsRow.date.isBefore(startDate)) {
+        continue;
+      }
+
       MaterialStateColor col = _getRowColor(fsRow);
       DataRow dataRow = DataRow(cells: _buildDataCells(fsRow), color: col);
       result.add(dataRow);
@@ -205,6 +219,9 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
       }
     }
 
+    if (result.length != _activeHeaderLength) {
+      lp('todo $_activeHeaderLength');
+    }
     return result;
   }
 

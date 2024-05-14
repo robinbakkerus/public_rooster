@@ -34,9 +34,9 @@ class SpreadsheetGenerator with AppMixin {
   List<String> getGroupNames(DateTime date) {
     List<String> result = [];
     for (TrainingGroup trainingGroup in AppData.instance.trainingGroups) {
-      if (trainingGroup.startDate.isBefore(date) &&
-          trainingGroup.endDate.isAfter(date) &&
-          !_isExcluded(trainingGroup, date)) {
+      if (trainingGroup.getStartDate().isBefore(date) &&
+          trainingGroup.getEndDate().isAfter(date) &&
+          !_isExcludedForPeriod(trainingGroup, date)) {
         result.add(trainingGroup.name);
       }
     }
@@ -45,15 +45,14 @@ class SpreadsheetGenerator with AppMixin {
 
   //---- private --
 
-  bool _isExcluded(TrainingGroup trainingGroup, DateTime date) {
-    if (trainingGroup.excludePeriods.isEmpty) {
+  bool _isExcludedForPeriod(TrainingGroup trainingGroup, DateTime date) {
+    if (trainingGroup.getSummerPeriod().isEmpty()) {
       return false;
     }
-    for (ExcludePeriod excludePeriod in trainingGroup.excludePeriods) {
-      if (date.isAfter(excludePeriod.fromDate) &&
-          date.isBefore(excludePeriod.toDate)) {
-        return true;
-      }
+
+    if (date.isAfter(trainingGroup.getSummerPeriod().fromDate) &&
+        date.isBefore(trainingGroup.getSummerPeriod().toDate)) {
+      return true;
     }
 
     return false;

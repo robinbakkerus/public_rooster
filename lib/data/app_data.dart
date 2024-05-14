@@ -18,7 +18,7 @@ class AppData {
   DateTime _activeDate = DateTime(2024, 1, 1);
   List<DateTime> _activeDates = [];
   List<FsSpreadsheet> activeSpreadsheets = [];
-  late List<ExcludeDay> excludeDays;
+  late SpecialDays specialDays;
 
   // --------------------
   void setActiveDate(DateTime date) {
@@ -39,5 +39,9 @@ class AppData {
 
   List<DateTime> getActiveDates() {
     return _activeDates;
+  }
+
+  SpecialPeriod getSummerPeriod() {
+    return specialDays.summerPeriod;
   }
 }

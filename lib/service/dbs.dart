@@ -8,5 +8,6 @@ abstract class Dbs {
   Future<bool> sendEmail(
       {required String to, required String subject, required String html});
   Future<List<TrainingGroup>> getTrainingGroups();
-  Future<List<ExcludeDay>> getExcludeDays();
+  Future<SpecialDays> getSpecialsDays();
+  Future<void> saveSpecialDays(SpecialDays specialDays);
 }

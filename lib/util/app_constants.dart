@@ -14,3 +14,13 @@ class AppConstants {
   final Color lonuDonderDag = const Color(0xffFFFDE7);
   final Color lonuZaterDag = const Color(0xffEBE8E6);
 }
+
+enum Groep {
+  pr,
+  r1,
+  r2,
+  r3,
+  zamo,
+  sg,
+  zomer;
+}
