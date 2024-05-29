@@ -94,6 +94,14 @@ class AppHelper {
     }
   }
 
+  //-----------------------------------------------
+  bool isSpreadsheetTooOld(FsSpreadsheet spreadsheet) {
+    DateTime dt = DateTime(spreadsheet.year, spreadsheet.month, 1);
+    const msPerDay = 86400000;
+    return DateTime.now().millisecondsSinceEpoch - dt.millisecondsSinceEpoch >
+        msPerDay * 100;
+  }
+
   ///-----------------------------------
   bool isDateExcluded(DateTime date) {
     SpecialDay? excludeDay = AppData.instance.specialDays.excludeDays

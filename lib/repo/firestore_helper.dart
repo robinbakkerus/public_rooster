@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/model/app_models.dart';
 import 'package:public_rooster/service/dbs.dart';
+import 'package:public_rooster/util/app_helper.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 enum FsCol {
@@ -32,7 +33,10 @@ class FirestoreHelper implements Dbs {
       for (var doc in querySnapshot.docs) {
         var map = doc.data() as Map<String, dynamic>;
         FsSpreadsheet fsSpreadsheet = FsSpreadsheet.fromMap(map);
-        result.add(fsSpreadsheet);
+        if (fsSpreadsheet.isFinal &&
+            !AppHelper.instance.isSpreadsheetTooOld(fsSpreadsheet)) {
+          result.add(fsSpreadsheet);
+        }
       }
     } catch (ex, stackTrace) {
       _handleError(ex, stackTrace);
