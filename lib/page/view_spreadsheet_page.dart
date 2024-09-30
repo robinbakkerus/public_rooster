@@ -211,7 +211,11 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
 
     if (!fsRow.isExtraRow) {
       for (int i = 0; i < groupNames.length; i++) {
-        result.add(_buildCell(fsRow.rowCells[i]));
+        if (fsRow.rowCells.length > i) {
+          result.add(_buildCell(fsRow.rowCells[i]));
+        } else {
+          result.add(_buildCell(""));
+        }
       }
     } else {
       for (int i = 0; i < groupNames.length; i++) {

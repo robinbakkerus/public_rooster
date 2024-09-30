@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     bool isWindows = platform == TargetPlatform.windows;
     AppHelper.instance.setupLocale(context);
     return MaterialApp(
-      title: 'Lonu trainingschemas',
+      title: 'Lonu public trainingschemas',
       scrollBehavior: isWindows
           ? const MaterialScrollBehavior()
               .copyWith(dragDevices: {PointerDeviceKind.mouse})
