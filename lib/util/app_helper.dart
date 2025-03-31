@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
@@ -105,7 +107,11 @@ class AppHelper {
   ///-----------------------------------
   bool isDateExcluded(DateTime date) {
     SpecialDay? excludeDay = AppData.instance.specialDays.excludeDays
-        .firstWhereOrNull((e) => e.dateTime.day == date.day);
+        .firstWhereOrNull((e) =>
+            e.dateTime.day == date.day &&
+            e.dateTime.month == date.month &&
+            e.dateTime.year == date.year);
+
     return excludeDay != null ? true : false;
   }
 
