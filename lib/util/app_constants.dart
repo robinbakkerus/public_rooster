@@ -13,6 +13,14 @@ class AppConstants {
   final Color lonuDinsDag = const Color(0xffF1F8E9);
   final Color lonuDonderDag = const Color(0xffFFFDE7);
   final Color lonuZaterDag = const Color(0xffEBE8E6);
+
+  final TextStyle defaultTextStyle = const TextStyle();
+
+  final TextStyle boldTextStyle = const TextStyle(
+    // fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: Color.fromARGB(221, 55, 1, 180),
+  );
 }
 
 enum Groep {

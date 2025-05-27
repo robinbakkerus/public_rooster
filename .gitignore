@@ -849,6 +849,7 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
+*.cache
 
 # Windows shortcuts
 *.lnk
@@ -895,3 +896,4 @@ DerivedData/
 env.dart
 env.g.dart
 
+.firebase/hosting.YnVpbGRcd2Vi.cache

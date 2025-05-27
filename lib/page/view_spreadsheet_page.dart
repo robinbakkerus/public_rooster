@@ -4,6 +4,7 @@ import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/data/app_version.dart' as version;
 import 'package:public_rooster/event/app_events.dart';
 import 'package:public_rooster/model/app_models.dart';
+import 'package:public_rooster/util/app_constants.dart';
 import 'package:public_rooster/util/app_helper.dart';
 import 'package:public_rooster/util/app_mixin.dart';
 import 'package:public_rooster/util/spreadsheet_generator.dart';
@@ -203,8 +204,17 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
   List<DataCell> _buildDataCells(FsSpreadsheetRow fsRow) {
     List<DataCell> result = [];
 
-    result.add(_buildCell(AppHelper.instance.dayAsString(fsRow.date)));
-    result.add(_buildTrainingCell(fsRow.trainingText));
+    final DateTime today = DateTime.now();
+    final bool isToday = fsRow.date.day == today.day &&
+        fsRow.date.month == today.month &&
+        fsRow.date.year == today.year;
+    TextStyle textStyle = isToday
+        ? AppConstants().boldTextStyle
+        : AppConstants().defaultTextStyle;
+
+    result
+        .add(_buildCell(AppHelper.instance.dayAsString(fsRow.date), textStyle));
+    result.add(_buildTrainingCell(fsRow.trainingText, textStyle));
 
     List<String> groupNames =
         SpreadsheetGenerator.instance.getGroupNames(fsRow.date);
@@ -212,9 +222,9 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     if (!fsRow.isExtraRow) {
       for (int i = 0; i < groupNames.length; i++) {
         if (fsRow.rowCells.length > i) {
-          result.add(_buildCell(fsRow.rowCells[i]));
+          result.add(_buildCell(fsRow.rowCells[i], textStyle));
         } else {
-          result.add(_buildCell(""));
+          result.add(_buildCell("", textStyle));
         }
       }
     } else {
@@ -229,11 +239,20 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     return result;
   }
 
-  DataCell _buildCell(String text) {
-    return DataCell(Text(text));
+  DataCell _buildCell(String text, TextStyle textStyle) {
+    if (text.isEmpty) {
+      return DataCell(const Text(''));
+    }
+    return DataCell(Text(
+      text,
+      style: textStyle,
+    ));
   }
 
-  DataCell _buildTrainingCell(String text) {
+  DataCell _buildTrainingCell(String text, TextStyle textStyle) {
+    if (text.isEmpty) {
+      return DataCell(const Text(''));
+    }
     double w = AppHelper.instance.isWindows() ? 400 : 150;
     return DataCell(Container(
         decoration:
@@ -244,6 +263,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
           child: Text(
             text,
             overflow: TextOverflow.ellipsis,
+            style: textStyle,
           ),
         )));
   }
