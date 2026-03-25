@@ -904,3 +904,4 @@ node_modules/
 .flutter-plugins-dependencies
 .firebase/hosting.YnVpbGRcd2Vi.cache
 .flutter-plugins-dependencies
+*.cache
