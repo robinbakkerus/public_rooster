@@ -14,12 +14,19 @@ class AppConstants {
   final Color lonuDonderDag = const Color(0xffFFFDE7);
   final Color lonuZaterDag = const Color(0xffEBE8E6);
 
-  final TextStyle defaultTextStyle = const TextStyle();
+  final TextStyle defaultTextStyle =
+      const TextStyle(fontWeight: FontWeight.w500);
 
   final TextStyle boldTextStyle = const TextStyle(
     // fontSize: 20,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w800,
     color: Color.fromARGB(221, 55, 1, 180),
+  );
+
+  final TextStyle oldTextStyle = const TextStyle(
+    // fontSize: 20,
+    fontWeight: FontWeight.normal,
+    color: Color.fromARGB(221, 113, 112, 114),
   );
 }
 
