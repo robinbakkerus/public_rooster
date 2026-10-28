@@ -914,3 +914,5 @@ analysis_options.yaml
 .flutter-plugins-dependencies
 analysis_options.yaml
 analysis_options.yaml
+/.firebase
+.flutter-plugins-dependencies
