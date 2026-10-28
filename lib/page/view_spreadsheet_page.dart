@@ -172,7 +172,7 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     DateTime endDate = AppData.instance.activeTrainingGroups[index].endDate!;
 
     for (FsSpreadsheetRow fsRow in _activeSpreadsheet.rows) {
-      if (fsRow.date.isAfter(endDate) || fsRow.date.isBefore(startDate)) {
+      if (fsRow.date.day > endDate.day || fsRow.date.isBefore(startDate)) {
         continue;
       }
 
