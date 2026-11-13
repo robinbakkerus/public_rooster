@@ -208,9 +208,10 @@ class _ViewSchemaPageState extends State<ViewSchemaPage> with AppMixin {
     final bool isToday = fsRow.date.day == today.day &&
         fsRow.date.month == today.month &&
         fsRow.date.year == today.year;
-    final bool isOld = fsRow.date.day < today.day ||
-        fsRow.date.month < today.month ||
-        fsRow.date.year < today.year;
+    final bool isOld =
+        (fsRow.date.day < today.day && fsRow.date.month == today.month) ||
+            fsRow.date.month < today.month ||
+            fsRow.date.year < today.year;
 
     TextStyle textStyle = isToday
         ? AppConstants().boldTextStyle

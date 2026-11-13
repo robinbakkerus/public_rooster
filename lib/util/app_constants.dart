@@ -15,11 +15,11 @@ class AppConstants {
   final Color lonuZaterDag = const Color(0xffEBE8E6);
 
   final TextStyle defaultTextStyle =
-      const TextStyle(fontWeight: FontWeight.w500);
+      const TextStyle(fontWeight: FontWeight.bold);
 
   final TextStyle boldTextStyle = const TextStyle(
     // fontSize: 20,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.bold,
     color: Color.fromARGB(221, 55, 1, 180),
   );
 
