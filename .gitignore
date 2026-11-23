@@ -921,3 +921,5 @@ analysis_options.yaml
 *.swift
 *.cc
 *.cmake
+.flutter-plugins-dependencies
+/.firebase
