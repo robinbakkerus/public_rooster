@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:public_rooster/controller/app_controller.dart';
 import 'package:public_rooster/data/app_data.dart';
 import 'package:public_rooster/data/app_version.dart' as version;

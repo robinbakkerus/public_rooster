@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:public_rooster/firebase_options.dart';
 import 'package:public_rooster/page/view_spreadsheet_page.dart';
 import 'package:public_rooster/util/app_helper.dart';
